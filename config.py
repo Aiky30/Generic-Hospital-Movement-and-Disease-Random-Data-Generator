@@ -7,8 +7,8 @@ INDIVIDUAL_COUNT = 1000
 INDIVIDUAL_LIST = range(1, INDIVIDUAL_COUNT)
 
 # Location
-LOCATION_AVG_COUNT = range(1, 6)  # (+/- 10%)
-LOCATION_AVG_DURATION = range(2, 10)  # In days
+LOCATION_AVG_COUNT = range(1, 3)  # (+/- 10%)
+LOCATION_DURATION_PER_COUNT = 14  # In days
 
 #FIXME: Some areas will have a higher value than others, i.e. A&E would have a different average duration!!
 #       That would also affect how many locations the individual had, A&E wopuld be the only one for some etc.
@@ -106,19 +106,6 @@ OUTPUT_ISOLATE_HEADINGS = [
     'MeditechSRChloramphenicol',
 ]
 
-"""
-
-
-
-AnonPtNo
-# date_format = "%m/%d/%y"
-
-# ID MPROS1179
-
-# 12/28/00
-"""
-
-
 original_description = [
     'Multi site collection',
     'Intra-vascular catheter',
@@ -137,7 +124,7 @@ OUTPUT_ISOLATE_FILENAME = os.path.join(BASE_DIR, 'Isolate_MT.csv')
 
 # Bacteria / disease
 
-ISOLATE_COUNT = range(1, 1000)
+ISOLATE_COUNT = range(1, 100)
 
 ANTIBIOGRAM_RESULT_BANK = range(0,10)
 

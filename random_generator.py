@@ -26,13 +26,15 @@ Metrics are on:
 import random
 import csv
 import radar
+import math
 
 
 def build_antibiogram_list():
+
     # Build a list of usable antibiograms
     for index in ANTIBIOGRAM_RESULT_BANK:
 
-        antibiogram={}
+        antibiogram = {}
 
         # For each antibiogram antibiotic
         for antibiotic in ANTIBIOGRAM_ANTIBIOTICS:
@@ -42,7 +44,101 @@ def build_antibiogram_list():
 
         ANTIBIOGRAM_RESULTS.append(antibiogram)
 
-    print("ANTIBIOGRAM_RESULTS: %s", ANTIBIOGRAM_RESULTS)
+
+def generate_random_admission(master_start_date, master_end_date, master_duration):
+    """
+
+    :param start: Date
+    :param end: Date
+    :param duration: Int
+    :return: Dict: { start: Date, end: Date }
+    """
+    duration = random.choice(master_duration)
+
+    # Generate a random date between the specified time period
+    start_date = radar.random_date(
+        start=master_start_date,
+        stop=master_end_date
+    )
+
+    end_date = start_date + timedelta(minutes=duration)
+
+    return {
+        'start': start_date,
+        'end': end_date
+    }
+
+#http://www.caijournal.com/viewimage.asp?img=CommunityAcquirInfect_2015_2_1_13_153857_b2.jpg
+
+
+def generate_location_count(master_start_date, master_end_date, location_duration_per_count, location_average_count):
+
+    # Dictate how many locations the admission should have
+    location_count = random.choice(location_average_count)
+
+    # how many days is the admission
+    duration = master_end_date - master_start_date
+
+    blocks = int(math.ceil(duration.days / location_duration_per_count))
+
+    if blocks > 1:
+        location_count *= blocks
+
+    return location_count
+
+
+def generate_movement_list_dates(master_start_date, master_end_date, location_count):
+    """
+    :return: array [{
+        start: Date,
+        end: Date
+    }]
+    """
+
+    if location_count == 1:
+        return [{
+            'start': master_start_date,
+            'end': master_end_date
+        }]
+
+
+    dates = []
+
+    for location in range(location_count - 1):
+
+        random_date = radar.random_date(
+            start=master_start_date,
+            stop=master_end_date
+        )
+
+        dates.append(random_date)
+
+    # Sort the dates into ascending order
+    dates.sort()
+
+    # FIXME: location count is 1???
+
+    # first loop set the start to be admission start, end to be random date 1
+    dates_out = [{
+        'start': master_start_date,
+        'end': dates[0]
+    }]
+
+    # continuous loops start is last loops value, end is current loops value
+    for i, date in enumerate(dates):
+
+        # last loop start is current value, last is admission
+        if len(dates) - 1 > i:
+            end = dates[i + 1]
+        else:
+            end = master_end_date
+
+        dates_out.append({
+            'start': date,
+            'end': end
+        })
+
+    return dates_out
 
 
 def generate_movement(writer):
@@ -68,47 +164,44 @@ def generate_movement(writer):
         ###############
 
         # Number of admissions
-        admission = 1
-        admission_duration = random.choice(ADMISSION_AVG_DURATION)
 
-        # Generate a random date between the specified time period
-        admission_start_date = radar.random_date(
-            start=DATE_START,
-            stop=DATE_END
-        )
+        admission = generate_random_admission(DATE_START, DATE_END, ADMISSION_AVG_DURATION)
 
-        admission_end_date = admission_start_date + timedelta(minutes=admission_duration)
-        #FIXME: Locations will be per admission!!
+        admission_start_date = admission['start']
+        admission_end_date = admission['end']
 
         ###############
         # LOCATIONS
         ###############
 
-        # Dictate how many locations the admission should have
-        location_count = random.choice(LOCATION_AVG_COUNT)
+        location_count = generate_location_count(admission_start_date, admission_end_date, LOCATION_DURATION_PER_COUNT, LOCATION_AVG_COUNT)
 
-        #print("individual: %s location_count: %s" % (individual, location_count))
-        #print("Admission start: %s, end: %s" % (admission_start_date.strftime(DATE_FORMAT), admission_end_date.strftime(DATE_FORMAT)))
+        location_dates = generate_movement_list_dates(admission['start'], admission['end'], location_count)
 
-        #FIXME: This requires an algorithm
-        # Algorithm could contain
+        admissions = []
 
-        # Define the duration of each location for the
-        location_duration = admission_duration / location_count
-        location_start_date = admission_start_date
+        """
 
-        admissions=[]
+        Get number of movements
+        for the total count of movements
+            generate a random date between the admission start and end date
 
-        for locations_preselected in xrange(0, location_count):
+        organise the randomly selected dates into the
+
+        """
+
+
+        for i, locations_preselected in enumerate(xrange(0, location_count)):
+
+            location_start_date = location_dates[i]['start']
+            location_end_date = location_dates[i]['end']
 
             location_selected = random.choice(LOCATION_LIST)
             #location_days = random.choice(LOCATION_AVG_DURATION)
 
-            tmp_location_start_date = location_start_date
-            location_end_date = tmp_location_start_date + timedelta(minutes=location_duration)
+            #tmp_location_start_date = location_start_date
+            #location_end_date = tmp_location_start_date + timedelta(minutes=location_duration)
 
-            #print("location duration: %s, admission_days: %s, location_count: %s" % (location_duration, admission_duration, location_count) )
-            #print("Location: %s, start: %s, end: %s" % (location_selected, location_start_date.strftime(DATE_FORMAT), location_start_date.strftime(DATE_FORMAT)))
 
             # Write the entry to the output file
             writer.writerow({
@@ -142,7 +235,7 @@ def generateIsolate(writer):
         # Randomly select an individual
         random_individual = random.choice(MASTER_COPY)
 
-        # Randomly select an antibiogram resutl set
+        # Randomly select an antibiogram result set
         random_antibiogram = random.choice(ANTIBIOGRAM_RESULTS)
 
         # randomly select a date within the individuals admissions
@@ -220,5 +313,7 @@ def main():
     build_movement_file()
 
     build_isolate_file()
+
+    exit()
 
 main()
