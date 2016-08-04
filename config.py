@@ -2,8 +2,13 @@ import os
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-# Individual - Note count must either
-INDIVIDUAL_COUNT = 1000
+
+INDIVIDUAL_COUNT = 2000
+# FIXME: Rename isolate count limit
+ISOLATE_COUNT_LIMIT = 2500
+ANTIBIOGRAM_RESULT_BANK_COUNT = 200
+
+# Individual
 INDIVIDUAL_LIST = range(1, INDIVIDUAL_COUNT)
 
 # Location
@@ -24,7 +29,7 @@ ADMISSION_AVG_DURATION = range(ADMISSION_MIN_DURATION, ADMISSION_MAX_DURATION)
 # Global
 DATE_END = datetime.today() - relativedelta(minutes=ADMISSION_MAX_DURATION)
 DATE_START = DATE_END - relativedelta(years=1)
-DATE_FORMAT = "%d/%m/%Y %H:%M:%S"  # https://docs.python.org/2/library/datetime.html
+DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.html
 
 ISOLATE_DATE_FORMAT = "%m/%d/%y"
 
@@ -124,9 +129,9 @@ OUTPUT_ISOLATE_FILENAME = os.path.join(BASE_DIR, 'Isolate_MT.csv')
 
 # Bacteria / disease
 
-ISOLATE_COUNT = range(1, 100)
+ISOLATE_COUNT = range(1, ISOLATE_COUNT_LIMIT)
 
-ANTIBIOGRAM_RESULT_BANK = range(0,10)
+ANTIBIOGRAM_RESULT_BANK = range(0, ANTIBIOGRAM_RESULT_BANK_COUNT)
 
 ANTIBIOGRAM_RESULTS = []
 
