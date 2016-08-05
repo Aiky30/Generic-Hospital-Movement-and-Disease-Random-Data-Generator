@@ -7,6 +7,7 @@ INDIVIDUAL_COUNT = 2000
 # FIXME: Rename isolate count limit
 ISOLATE_COUNT_LIMIT = 2500
 ANTIBIOGRAM_RESULT_BANK_COUNT = 200
+LOCATION_COUNT = 114
 
 # Individual
 INDIVIDUAL_LIST = range(1, INDIVIDUAL_COUNT)
@@ -17,12 +18,17 @@ LOCATION_DURATION_PER_COUNT = 14  # In days
 
 #FIXME: Some areas will have a higher value than others, i.e. A&E would have a different average duration!!
 #       That would also affect how many locations the individual had, A&E wopuld be the only one for some etc.
-LOCATION_LIST = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12', 'W13', 'W14', 'W15', 'W16',
-                 'W17', 'W18', 'W19', 'W20', 'W21', 'W22', 'W23', 'W24']
+# FIXME: Shouldn't be creating here
+
+LOCATION_LIST = []
+_location_prefix = "W"
+for location in range(1, LOCATION_COUNT):
+    LOCATION_LIST.append(_location_prefix + str(location))
+
 
 # Admission
-ADMISSION_MIN_DURATION = 1440 * 1 # In mins (calculated to days)
-ADMISSION_MAX_DURATION = 1440 * 50 # In mins (calculated to days)
+ADMISSION_MIN_DURATION = 1440 * 1  # In mins (calculated to days)
+ADMISSION_MAX_DURATION = 1440 * 50  # In mins (calculated to days)
 ADMISSION_AVG_COUNT = 1
 ADMISSION_AVG_DURATION = range(ADMISSION_MIN_DURATION, ADMISSION_MAX_DURATION)
 
@@ -133,8 +139,6 @@ ISOLATE_COUNT = range(1, ISOLATE_COUNT_LIMIT)
 
 ANTIBIOGRAM_RESULT_BANK = range(0, ANTIBIOGRAM_RESULT_BANK_COUNT)
 
-ANTIBIOGRAM_RESULTS = []
-
 ANTIBIOGRAM_ANTIBIOTICS = [
     'VitekSRBenzylpenicillin',
     'VitekSRCefoxitin',
@@ -158,8 +162,4 @@ ANTIBIOGRAM_ANTIBIOTICS = [
     'VitekSRInducibleClindResis',
 ]
 
-ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S','I','R']
-
-
-
-MASTER_COPY = []
+ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S', 'I', 'R']

@@ -1,5 +1,11 @@
 from config import *
 
+import sys
+import random
+import csv
+import radar
+import math
+
 """
 Generic Hospital Movement and Disease Random Data Generator (GHMDRDG)
 ===================================================
@@ -22,14 +28,20 @@ Metrics are on:
 # IDEA: Min, Max and avrg could be the algorithm for random
 # FIXME: Randomise dates: http://stackoverflow.com/questions/553303/generate-a-random-date-between-two-other-dates
 
+"""
 
-import random
-import csv
-import radar
-import math
+IDEA: Make one method of antibiogram more popular than others, some kind of percentage based allocation in the random selection.
 
 
-def build_antibiogram_list():
+Config for AB
+"""
+
+
+#FIXME: Shouldn't be declared as a global!!
+ANTIBIOGRAM_RESULTS = []
+
+
+def build_random_antibiogram_list():
 
     # Build a list of usable antibiograms
     for index in ANTIBIOGRAM_RESULT_BANK:
@@ -44,6 +56,31 @@ def build_antibiogram_list():
 
         ANTIBIOGRAM_RESULTS.append(antibiogram)
 
+def get_antibiogram_list_from_file(filename):
+
+    # Open file for reading
+    try:
+        # Open the file with option 'rU' Enable Universal newline support
+        with open(filename, 'rU') as csvfile:
+
+            reader = csv.DictReader(csvfile)
+
+            # Load the file into memory (FIXME: this won't work for big data sets)
+            mapped_data = []
+
+            for row in reader:
+
+                row_data = {}
+
+                for heading in ANTIBIOGRAM_SOURCE_FILE_HEADINGS:
+                    row_data.update({
+                        heading: row[heading]
+                    })
+
+                ANTIBIOGRAM_RESULTS.append(row_data)
+
+    except IOError as err:
+        sys.exit(err)
 
 def generate_random_admission(master_start_date, master_end_date, master_duration):
     """
@@ -157,6 +194,8 @@ def generate_movement(writer):
     # Shuffle the list to mix the id's around a little
     #random.shuffle(INDIVIDUAL_LIST)
 
+    output = []
+
     for individual in INDIVIDUAL_LIST:
 
         ###############
@@ -223,17 +262,19 @@ def generate_movement(writer):
             'discharge_date': admission_end_date
         })
 
-        MASTER_COPY.append({
+        output.append({
             'individual': individual,
             'admissions': admissions
         })
 
-def generateIsolate(writer):
+    return output
+
+def generateIsolate(writer, output):
 
     for isolate in ISOLATE_COUNT:
 
         # Randomly select an individual
-        random_individual = random.choice(MASTER_COPY)
+        random_individual = random.choice(output)
 
         # Randomly select an antibiogram result set
         random_antibiogram = random.choice(ANTIBIOGRAM_RESULTS)
@@ -246,37 +287,25 @@ def generateIsolate(writer):
 
         #TODO: Auto write the rows headings etc to the file rather than entering each manually here
 
-        writer.writerow({
+        current_row = {
             'AnonPtNo': random_individual.get('individual'),
             'DateSent': random_date.strftime(ISOLATE_DATE_FORMAT),
             'Originaldescription': random.choice(original_description),
-            'SampleID': 'MPROS' + str(isolate),
-            'VitekSRBenzylpenicillin': random_antibiogram.get('VitekSRBenzylpenicillin'),
-            'VitekSRCefoxitin': random_antibiogram.get('VitekSRCefoxitin'),
-            'VitekSROxacillin': random_antibiogram.get('VitekSROxacillin'),
-            'VitekSRCiprofloxacin': random_antibiogram.get('VitekSRCiprofloxacin'),
-            'VitekSRErythromycin': random_antibiogram.get('VitekSRErythromycin'),
-            'VitekSRChloramphenicol': random_antibiogram.get('VitekSRChloramphenicol'),
-            'VitekSRDaptomycin': random_antibiogram.get('VitekSRDaptomycin'),
-            'VitekSRFusidicAcid': random_antibiogram.get('VitekSRFusidicAcid'),
-            'VitekSRGentamicin': random_antibiogram.get('VitekSRGentamicin'),
-            'VitekSRLinezolid': random_antibiogram.get('VitekSRLinezolid'),
-            'VitekSRMupirocin': random_antibiogram.get('VitekSRMupirocin'),
-            'VitekSRNitrofurantoin': random_antibiogram.get('VitekSRNitrofurantoin'),
-            'VitekSRRifampicin': random_antibiogram.get('VitekSRRifampicin'),
-            'VitekSRTeicoplanin': random_antibiogram.get('VitekSRTeicoplanin'),
-            'VitekSRTetracycline': random_antibiogram.get('VitekSRTetracycline'),
-            'VitekSRTigecycline': random_antibiogram.get('VitekSRTigecycline'),
-            'VitekSRTrimethoprim': random_antibiogram.get('VitekSRTrimethoprim'),
-            'VitekSRVancomycin': random_antibiogram.get('VitekSRVancomycin'),
-            'VitekSRClindamycin': random_antibiogram.get('VitekSRClindamycin'),
-            'VitekSRInducibleClindResis': random_antibiogram.get('VitekSRInducibleClindResis'),
-        })
+            'SampleID': 'MPROS' + str(isolate)
+        }
+
+        for antibiotic in ANTIBIOGRAM_ANTIBIOTICS:
+
+            current_row.update({
+                antibiotic: random_antibiogram.get(antibiotic)
+            })
+
+        writer.writerow(current_row)
 
 
 def build_movement_file():
 
-    # Open file for reading
+    # Open file for writing
     try:
         # Open the file with option 'rU' Enable Universal newline support
         with open(OUTPUT_MOVEMENT_FILENAME, 'w') as csvfile:
@@ -284,15 +313,15 @@ def build_movement_file():
             writer = csv.DictWriter(csvfile, fieldnames=OUTPUT_MOVEMENT_HEADINGS)
             writer.writeheader()
 
-            generate_movement(writer)
+            return generate_movement(writer)
 
     except IOError as err:
         print("Error in file writing", err)
 
 
-def build_isolate_file():
+def build_isolate_file(output):
 
-    # Open file for reading
+    # Open file for writing
     try:
         # Open the file with option 'rU' Enable Universal newline support
         with open(OUTPUT_ISOLATE_FILENAME, 'w') as csvfile:
@@ -300,7 +329,7 @@ def build_isolate_file():
             writer = csv.DictWriter(csvfile, fieldnames=OUTPUT_ISOLATE_HEADINGS)
             writer.writeheader()
 
-            generateIsolate(writer)
+            generateIsolate(writer, output)
 
     except IOError as err:
         print("Error in file writing", err)
@@ -308,11 +337,12 @@ def build_isolate_file():
 
 def main():
 
-    build_antibiogram_list()
+    build_random_antibiogram_list()
+    #get_antibiogram_list_from_file(ANTIBIOGRAM_SOURCE_FILE_LOCATION)
 
-    build_movement_file()
+    output = build_movement_file()
 
-    build_isolate_file()
+    build_isolate_file(output)
 
     exit()
 
