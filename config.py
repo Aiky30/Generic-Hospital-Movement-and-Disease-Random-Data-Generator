@@ -3,14 +3,22 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 
-INDIVIDUAL_COUNT = 2000
-# FIXME: Rename isolate count limit
-ISOLATE_COUNT_LIMIT = 2500
-ANTIBIOGRAM_RESULT_BANK_COUNT = 200
+IN_PATIENT_COUNT = 2000
+OUT_PATIENT_COUNT = 1000
+
+INDIVIDUAL_COUNT = IN_PATIENT_COUNT + OUT_PATIENT_COUNT
+ISOLATE_COUNT = 2500
+ANTIBIOGRAM_RESULT_BANK_COUNT = 20
 LOCATION_COUNT = 114
+
+
+# TODO: Create outpatients that are recorded in the isolate file!!
+# TODO: Make a percentaged system where you say that x percent are in patients and x percent are outpatients
 
 # Individual
 INDIVIDUAL_LIST = range(1, INDIVIDUAL_COUNT)
+IN_PATIENT_LIST = range(1, IN_PATIENT_COUNT)
+OUT_PATIENT_LIST = range(IN_PATIENT_COUNT, INDIVIDUAL_COUNT)
 
 # Location
 LOCATION_AVG_COUNT = range(1, 3)  # (+/- 10%)
@@ -39,8 +47,8 @@ DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.htm
 
 ISOLATE_DATE_FORMAT = "%m/%d/%y"
 
-#BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_DIR = '/srv/www/development/imperial-college/gismoh-v2/backend/data/mrsa001_data'
+BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+#BASE_DIR = '/srv/www/development/imperial-college/gismoh-v2/backend/data/mrsa001_data'
 
 # Output movement file
 OUTPUT_MOVEMENT_HEADINGS = [
@@ -62,7 +70,10 @@ OUTPUT_ISOLATE_HEADINGS = [
     'AnonPtNo',
     'DateSent',
     'Originaldescription',
+    'Sampletype',
     'SampleID',
+    'GPHospital',
+    'Location',
     'VitekMICBenzylpenicillin',
     'VitekSRBenzylpenicillin',
     'VitekMICCefoxitin',
@@ -117,7 +128,7 @@ OUTPUT_ISOLATE_HEADINGS = [
     'MeditechSRChloramphenicol',
 ]
 
-original_description = [
+ISOLATE_SAMPLE_DESCRIPTION = [
     'Multi site collection',
     'Intra-vascular catheter',
     'LEG',
@@ -128,14 +139,41 @@ original_description = [
     'ABDOMEN',
 ]
 
+ISOLATE_SAMPLE_TYPE = [
+    'Screen',
+    'Pus or swab, to be verified',
+]
 
+ISOLATE_IN_PATIENT_SAMPLE_BUILDING = "AddiesWards"
+
+ISOLATE_OUT_PATIENT_SAMPLE_BUILDING = [
+    {
+        'name': 'AddiesDayUnit',
+        'locations': [
+            'Haematology DU Box 259',
+        ]
+    },
+    {
+        'name': 'Hinch',
+        'locations': [
+            'Hinch Procedure Unit',
+        ]
+    },
+    {
+        'name': 'GP',
+        'locations': [
+            'GP - SAWTRY, 45 High Street',
+            'GP-BARLEY, The Surgery,High St',
+        ]
+    },
+]
 
 OUTPUT_ISOLATE_FILENAME = os.path.join(BASE_DIR, 'Isolate_MT.csv')
 
 
 # Bacteria / disease
 
-ISOLATE_COUNT = range(1, ISOLATE_COUNT_LIMIT)
+ISOLATE_LIST = range(1, ISOLATE_COUNT)
 
 ANTIBIOGRAM_RESULT_BANK = range(0, ANTIBIOGRAM_RESULT_BANK_COUNT)
 
@@ -160,6 +198,18 @@ ANTIBIOGRAM_ANTIBIOTICS = [
     'VitekSRVancomycin',
     'VitekSRClindamycin',
     'VitekSRInducibleClindResis',
+    'MeditechSRFlucloxacillin',
+    'MeditechSRCiprofloxacin',
+    'MeditechSRErythromycin',
+    'MeditechSRFusidicAcid',
+    'MeditechSRGentamicin',
+    'MeditechSRTetracycline',
+    'MeditechSRVancomycin',
+    'MeditechSRMupirocin',
+    'MeditechSRRifampicin',
+    'MeditechSRNeomycin',
+    'MeditechSRLinezolid',
+    'MeditechSRChloramphenicol',
 ]
 
 ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S', 'I', 'R']
