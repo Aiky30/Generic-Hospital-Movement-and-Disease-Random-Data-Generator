@@ -11,9 +11,9 @@ ISOLATE_COUNT = 2500
 ANTIBIOGRAM_RESULT_BANK_COUNT = 20
 LOCATION_COUNT = 114
 
-
 # TODO: Create outpatients that are recorded in the isolate file!!
-# TODO: Make a percentaged system where you say that x percent are in patients and x percent are outpatients
+# TODO: Make a percentage system where you say that x percent are in patients and x percent are outpatients
+# TODO: Patient numbers should have a start auto increment value / prefix. NHS numbers are between 9 and 11 digits long
 
 # Individual
 INDIVIDUAL_LIST = range(1, INDIVIDUAL_COUNT)
