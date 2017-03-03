@@ -77,6 +77,7 @@ class Movement:
             location_dates = self.generate_movement_list_dates(admission['start'], admission['end'], location_count)
 
             admissions = []
+            locations = []
 
             for i, locations_preselected in enumerate(xrange(0, location_count)):
 
@@ -96,6 +97,12 @@ class Movement:
                     'Hospital': 'AddiesWards'
                 })
 
+                locations.append({
+                    'name': location_selected,
+                    'admission_date': location_start_date,
+                    'discharge_date': location_end_date
+                })
+
             admissions.append({
                 'admission_date': admission_start_date,
                 'discharge_date': admission_end_date
@@ -103,7 +110,8 @@ class Movement:
 
             output.append({
                 'individual': individual,
-                'admissions': admissions
+                'admissions': admissions,
+                'locations': locations,
             })
 
         return output

@@ -101,7 +101,6 @@ class Isolate:
 
             writer.writerow(current_row)
 
-
     def build_random_antibiogram_list(self):
 
         # Build a list of usable antibiograms

@@ -2,7 +2,7 @@ from config import *
 
 from movement import Movement
 from isolate import Isolate
-
+from outbreak_simulator import OutbreakSimulator
 """
 Generic Hospital Movement and Disease Random Data Generator (GHMDRDG)
 ===================================================
@@ -38,6 +38,8 @@ def main():
 
     movement = Movement()
     output = movement.get_output()
+
+    OutbreakSimulator(output)
 
     isolate = Isolate(output)
 
