@@ -1,6 +1,7 @@
 from config import *
 
 from movement import Movement
+from antibiogram import Antibiogram
 from isolate import Isolate
 from outbreak_simulator import OutbreakSimulator
 """
@@ -36,12 +37,16 @@ Config for AB
 
 def main():
 
+    antibiogram = Antibiogram()
+
     movement = Movement()
-    output = movement.get_output()
 
-    OutbreakSimulator(output)
+    outbreak = OutbreakSimulator(movement)
 
-    isolate = Isolate(output)
+    # TODO: Link the outbreak data into the isolate file,
+    #          the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns
+
+    isolate = Isolate(movement, antibiogram)
 
     exit(0)
 

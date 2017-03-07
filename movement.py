@@ -6,16 +6,31 @@ import radar
 import math
 
 
+from models import *
+
+
 class Movement:
 
     def __init__(self):
+
+        self.individual_list = []
+
+        # Generate individuals
+        self.generate_individuals()
 
         self.create_output_file()
 
     #def __del__(self):
 
-    def get_output(self):
-        return self.movement_output
+    def add_individual(self, individual):
+        self.individual_list.append(individual)
+
+    def generate_individuals(self):
+
+        for individual_id in IN_PATIENT_LIST:
+
+            individual = Individual(individual_id)
+            self.add_individual(individual)
 
     def create_output_file(self):
 
@@ -27,7 +42,7 @@ class Movement:
                 writer = csv.DictWriter(csvfile, fieldnames=OUTPUT_MOVEMENT_HEADINGS)
                 writer.writeheader()
 
-                self.movement_output = self.generate_movement(writer)
+                self.generate_movement(writer)
 
         except IOError as err:
 
@@ -52,7 +67,9 @@ class Movement:
 
         output = []
 
-        for individual in IN_PATIENT_LIST:
+        for individual in self.individual_list:
+
+            individual_id = individual.id
 
             ###############
             # Admissions
@@ -76,9 +93,6 @@ class Movement:
             # Organise the randomly selected dates into the admission
             location_dates = self.generate_movement_list_dates(admission['start'], admission['end'], location_count)
 
-            admissions = []
-            locations = []
-
             for i, locations_preselected in enumerate(xrange(0, location_count)):
 
                 location_start_date = location_dates[i]['start']
@@ -93,28 +107,15 @@ class Movement:
                     'SpellDischargeDate': admission_end_date.strftime(DATE_FORMAT),
                     'SpellAdmissionDate': admission_start_date.strftime(DATE_FORMAT),
                     'Ward': location_selected,
-                    'AnonPtNo': individual,
+                    'AnonPtNo': individual_id,
                     'Hospital': 'AddiesWards'
                 })
 
-                locations.append({
-                    'name': location_selected,
-                    'admission_date': location_start_date,
-                    'discharge_date': location_end_date
-                })
+                generated_location = Location(location_selected, location_start_date, location_end_date)
+                individual.add_location(generated_location)
 
-            admissions.append({
-                'admission_date': admission_start_date,
-                'discharge_date': admission_end_date
-            })
-
-            output.append({
-                'individual': individual,
-                'admissions': admissions,
-                'locations': locations,
-            })
-
-        return output
+            generated_admission = Admission(admission_start_date, admission_end_date)
+            individual.add_admission(generated_admission)
 
     # #http://www.caijournal.com/viewimage.asp?img=CommunityAcquirInfect_2015_2_1_13_153857_b2.jpg
     def generate_random_admission(self, master_start_date, master_end_date, master_duration):

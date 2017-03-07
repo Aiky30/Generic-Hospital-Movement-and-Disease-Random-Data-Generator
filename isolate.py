@@ -8,12 +8,12 @@ import radar
 
 class Isolate:
 
-    def __init__(self, movement):
+    def __init__(self, movement, antibiogram):
 
-        self.antibiogram_list = []
+
+        self.antibiogram = antibiogram
         self.movement = movement
 
-        self.build_random_antibiogram_list()
         # get_antibiogram_list_from_file(ANTIBIOGRAM_SOURCE_FILE_LOCATION)
 
         self.create_output_file()
@@ -48,18 +48,19 @@ class Isolate:
             isolate_id = 'MPROS' + str(isolate)
 
             # Is the randomly selected individual an in patient
-            if new_random_individual < len(self.movement):
+            if new_random_individual < len(self.movement.individual_list):
 
-                random_individual = self.movement[new_random_individual]
+                random_individual = self.movement.individual_list[new_random_individual]
 
-                random_individual_id = random_individual.get('individual')
+                random_individual_id = random_individual.id
 
                 # randomly select a date within the individuals admissions
+                # Random admission
+                random_admission = random.choice(random_individual.admission_list)
+
                 random_date = radar.random_date(
-                    start=random_individual.get('admissions')[0].get('admission_date'),
-                    # FIXME: Getting 0 is a hack!!
-                    stop=random_individual.get('admissions')[0].get('discharge_date'),
-                    # FIXME: Getting 0 is a hack!!
+                    start=random_admission.admission_date,
+                    stop=random_admission.discharge_date,
                 )
 
                 building_sent_from_name = ISOLATE_IN_PATIENT_SAMPLE_BUILDING
@@ -82,7 +83,7 @@ class Isolate:
                 building_sent_from_location = random.choice(building_sent_from.get('locations'))
 
             # Randomly select an antibiogram result set
-            random_antibiogram = random.choice(self.antibiogram_list)
+            random_antibiogram = self.antibiogram.choose_random_antibiogram()
 
             current_row = {
                 'AnonPtNo': random_individual_id,
@@ -94,50 +95,9 @@ class Isolate:
                 'Location': building_sent_from_location
             }
 
-            for antibiotic in ANTIBIOGRAM_ANTIBIOTICS:
-                current_row.update({
-                    antibiotic: random_antibiogram.get(antibiotic)
-                })
+            mapped_antibiogram = self.antibiogram.get_antibiogram_map(random_antibiogram, ANTIBIOGRAM_ANTIBIOTICS)
+
+            current_row.update(mapped_antibiogram)
 
             writer.writerow(current_row)
 
-    def build_random_antibiogram_list(self):
-
-        # Build a list of usable antibiograms
-        for index in ANTIBIOGRAM_RESULT_BANK:
-
-            antibiogram = {}
-
-            # For each antibiogram antibiotic
-            for antibiotic in ANTIBIOGRAM_ANTIBIOTICS:
-
-                # Allocate a random result to the antibiotic
-                antibiogram[antibiotic] = random.choice(ANTIBIOGRAM_ANTIBIOTIC_VALUES)
-
-            self.antibiogram_list.append(antibiogram)
-
-    def get_antibiogram_list_from_file(self, filename):
-
-        # Open file for reading
-        try:
-            # Open the file with option 'rU' Enable Universal newline support
-            with open(filename, 'rU') as csvfile:
-
-                reader = csv.DictReader(csvfile)
-
-                # Load the file into memory (FIXME: this won't work for big data sets)
-                mapped_data = []
-
-                for row in reader:
-
-                    row_data = {}
-
-                    for heading in ANTIBIOGRAM_SOURCE_FILE_HEADINGS:
-                        row_data.update({
-                            heading: row[heading]
-                        })
-
-                    self.antibiogram_list.append(row_data)
-
-        except IOError as err:
-            sys.exit(err)
