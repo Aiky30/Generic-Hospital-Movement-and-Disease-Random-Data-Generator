@@ -4,6 +4,17 @@ class Location:
         self.admission_date = admission_date
         self.discharge_date = discharge_date
 
+class Isolate:
+    def __init__(self, id=None):
+        self.id = id
+        self.individual_id = None
+        self.sample_type = None
+        self.sample_description = None
+        self.date_sent = None
+        self.sent_from_location = None
+        self.sent_from_name = None
+        self.antibiogram = None
+
 
 class Admission:
     def __init__(self, admission_date=None, discharge_date=None):

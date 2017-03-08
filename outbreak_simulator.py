@@ -1,4 +1,6 @@
 from config import *
+from models import *
+
 
 import random
 import csv
@@ -74,9 +76,11 @@ class OutbreakSimulator:
 
     """
 
-    def __init__(self, movement):
+    def __init__(self, movement, antibiogram, master_resultset):
 
         self.movement = movement
+        self.antibiogram = antibiogram
+        self.master_isolate_list = master_resultset.isolate_list
 
         # FIXME: Add to external config
         self.outbreak_start_date = DATE_START + relativedelta(days=1)
@@ -131,7 +135,7 @@ class OutbreakSimulator:
     def create_outbreak_source(self):
 
         #FIXME: USe the antibiogram object helpers!!
-        chosen_antibiogram = random.choice(ANTIBIOGRAM_RESULT_BANK)
+        chosen_antibiogram = self.antibiogram.choose_random_antibiogram()
 
         chosen_individual = self.choose_suitable_individual()
 
@@ -195,8 +199,6 @@ class OutbreakSimulator:
                 # Record the source so that they cannot be re-infected
                 self.infected_individuals.append(source_individual_id)
 
-                #FIXME: Switch the loop on individual and locations so you can break out of the iondividual and save process time
-
                 # get all individuals who have shared the locations at the same time
                 for individual in self.movement.individual_list:
 
@@ -256,6 +258,32 @@ class OutbreakSimulator:
                                     })
 
                                     self.stats.add_isolate()
+
+                                    #######
+                                    # Isolate stuff
+                                    ######
+
+                                    # Generate an isolate id
+                                    isolate_id = 'MPROS' + str(ISOLATE_COUNT + len(self.master_isolate_list))
+                                    # Randomly select a sample type
+                                    sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
+
+                                    building_sent_from_name = ISOLATE_IN_PATIENT_SAMPLE_BUILDING
+                                    building_sent_from_location = "unkown"
+
+
+
+                                    new_isolate = Isolate(isolate_id)
+                                    new_isolate.individual_id = current_individual_id
+                                    new_isolate.sample_type = sample_type
+                                    new_isolate.sample_description = random.choice(ISOLATE_SAMPLE_DESCRIPTION)
+                                    # FIXME: Not actually the date taken, this is also misleading as the sample would be taken after the actual infection!!!!
+                                    new_isolate.date_sent = date_of_transmission
+                                    new_isolate.sent_from_location = building_sent_from_location
+                                    new_isolate.sent_from_name = building_sent_from_name
+                                    new_isolate.antibiogram = self.outbreak_source.get('antibiogram')
+
+                                    self.master_isolate_list.append(new_isolate)
 
             # if the outbreak has finished
             if not current_phase_output:

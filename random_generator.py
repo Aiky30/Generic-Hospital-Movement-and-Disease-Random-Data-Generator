@@ -2,7 +2,7 @@ from config import *
 
 from movement import Movement
 from antibiogram import Antibiogram
-from isolate import Isolate
+from isolate import IsolateRandomSimulator, IsolateOutput
 from outbreak_simulator import OutbreakSimulator
 """
 Generic Hospital Movement and Disease Random Data Generator (GHMDRDG)
@@ -34,19 +34,43 @@ IDEA: Make one method of antibiogram more popular than others, some kind of perc
 Config for AB
 """
 
+class MasterResultSet:
+    def __init__(self):
+        self.isolate_list = []
 
 def main():
+
+    master_resultset = MasterResultSet()
+
 
     antibiogram = Antibiogram()
 
     movement = Movement()
 
-    outbreak = OutbreakSimulator(movement)
+    outbreak = OutbreakSimulator(movement, antibiogram, master_resultset)
 
     # TODO: Link the outbreak data into the isolate file,
     #          the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns
 
-    isolate = Isolate(movement, antibiogram)
+    IsolateRandomSimulator(movement, antibiogram, outbreak, master_resultset)
+
+    IsolateOutput(antibiogram, master_resultset)
+
+    """
+
+        Isolate file writer takes the generated isolate list
+
+        Generate movement
+        Generate outbreak
+        Generate isolates / samples from the outbreak data
+        Generate random isolate list
+
+        IsolateOutbreakSimulator
+        IsolateRandomSimulator
+
+
+        IsolateWriter writes out the completed list of isolates
+    """
 
     exit(0)
 
