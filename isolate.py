@@ -41,7 +41,7 @@ class IsolateRandomSimulator:
             sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
 
             # Generate an isolate id
-            isolate_id = 'MPROS' + str(isolate)
+            isolate_id = isolate
 
             # Is the randomly selected individual an in patient
             if new_random_individual < len(self.movement.individual_list):
@@ -90,7 +90,6 @@ class IsolateRandomSimulator:
             new_isolate.sent_from_name = building_sent_from_name
             new_isolate.antibiogram = random_antibiogram
 
-
             #mapped_antibiogram = self.antibiogram.get_antibiogram_map(random_antibiogram, ANTIBIOGRAM_ANTIBIOTICS)
 
             self.isolate_list.append(new_isolate)
@@ -134,24 +133,6 @@ class IsolateOutput:
                 'Location': isolate.sent_from_location
             }
 
-            """
-            new_isolate = Isolate(isolate_id)
-            new_isolate.individual_id = random_individual_id
-            new_isolate.sample_type = sample_type
-            new_isolate.sample_description = random.choice(ISOLATE_SAMPLE_DESCRIPTION)
-            new_isolate.date_sent = random_date.strftime(ISOLATE_DATE_FORMAT)
-            new_isolate.sent_from_location = building_sent_from_location
-            new_isolate.sent_from_name = building_sent_from_name
-            new_isolate.antibiogram = random_antibiogram
-
-            'AnonPtNo': random_individual_id,
-            'DateSent': random_date.strftime(ISOLATE_DATE_FORMAT),
-            'Originaldescription': random.choice(ISOLATE_SAMPLE_DESCRIPTION),
-            'Sampletype': sample_type,
-            'SampleID': isolate_id,
-            'GPHospital': building_sent_from_name,
-            'Location': building_sent_from_location
-            """
             mapped_antibiogram = self.antibiogram.get_antibiogram_map(isolate.antibiogram, ANTIBIOGRAM_ANTIBIOTICS)
 
             current_row.update(mapped_antibiogram)

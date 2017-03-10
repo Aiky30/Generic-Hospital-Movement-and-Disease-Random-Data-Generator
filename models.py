@@ -6,7 +6,7 @@ class Location:
 
 class Isolate:
     def __init__(self, id=None):
-        self.id = id
+        self.id = 'MPROS' + str(id)
         self.individual_id = None
         self.sample_type = None
         self.sample_description = None

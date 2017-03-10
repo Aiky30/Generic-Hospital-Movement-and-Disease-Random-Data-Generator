@@ -15,13 +15,14 @@ OUTPUT_OUTBREAK_HEADINGS = [
     'source_individual',
     'individual',
     'location',
-    'date_of_infection'
+    'date_of_infection',
+    'level'
 ]
 
 # FIXME: Requires plumbing!!
 # TODO: Could be a range and randomly selected max / min multiplier
-OUTBREAK_MULTIPLIER = 2  # The nth number of transmission
-
+DISEASE_CALC_LIST = range(1, 10)
+DISEASE_SEVERITY = 3  # 1 is low, 10 is high
 
 # TODO: Need the time that the overlap occured to better add an isolate date!!
 # FIXME: Should be an external package!!
@@ -78,6 +79,8 @@ class OutbreakSimulator:
 
     def __init__(self, movement, antibiogram, master_resultset):
 
+        self.isolate_start_id = ISOLATE_COUNT
+
         self.movement = movement
         self.antibiogram = antibiogram
         self.master_isolate_list = master_resultset.isolate_list
@@ -119,6 +122,26 @@ class OutbreakSimulator:
             print("Error in file writing", err)
             exit(1)
 
+    def add_isolate(self, isolate_id, individual_id, date_of_transmission):
+
+        # Randomly select a sample type
+        sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
+
+        building_sent_from_name = ISOLATE_IN_PATIENT_SAMPLE_BUILDING
+        building_sent_from_location = "unkown"
+
+        new_isolate = Isolate(isolate_id)
+        new_isolate.individual_id = individual_id
+        new_isolate.sample_type = sample_type
+        new_isolate.sample_description = random.choice(ISOLATE_SAMPLE_DESCRIPTION)
+        # FIXME: Not actually the date taken, this is also misleading as the sample would be taken after the actual infection!!!!
+        new_isolate.date_sent = date_of_transmission
+        new_isolate.sent_from_location = building_sent_from_location
+        new_isolate.sent_from_name = building_sent_from_name
+        new_isolate.antibiogram = self.outbreak_source.get('antibiogram')
+
+        self.master_isolate_list.append(new_isolate)
+
     # Only choose an individual that has had locations or else this oubreak is useless!!
     def choose_suitable_individual(self, min_locations=3):
 
@@ -153,15 +176,21 @@ class OutbreakSimulator:
             'antibiogram': chosen_antibiogram,
             'individual': chosen_individual,
             'location': chosen_location,
-            'date_of_infection': date_of_infection
+            'date_of_infection': date_of_infection,
+            'level': 1
         }
 
         self.writer.writerow({
-            'source_individual': chosen_individual_id,
+            'source_individual': "",
             'individual': chosen_individual_id,
             'location': chosen_location.name,
-            'date_of_infection': date_of_infection
+            'date_of_infection': date_of_infection,
+            'level': 1
         })
+
+        self.isolate_start_id += 1
+
+        self.add_isolate(self.isolate_start_id, chosen_individual_id, date_of_infection)
 
     def individual_already_part_of_outbreak(self, source_individual, current_individual, outbreak_results):
 
@@ -179,22 +208,74 @@ class OutbreakSimulator:
 
         return False
 
+    def transmission_occured(self):
+
+        transmission_likely_value = random.choice(DISEASE_CALC_LIST)
+
+        if DISEASE_SEVERITY >= transmission_likely_value:
+            print("transmission occured")
+            return True
+
+        print("transmission rejected")
+
+        return False
+
+    def individual_overlap_location(self, source, individual):
+
+        source_location_list = source['individual'].location_list
+        current_location_list = individual.location_list
+
+        # for each of the sources locations
+        for location in source_location_list:
+            location_name = location.name
+            location_start = location.admission_date
+            location_end = location.discharge_date
+
+            # For each of the current individuals locations
+            for curr_location in current_location_list:
+
+                if (curr_location.name == location_name and
+                        two_date_blocks_overlap(location_start, location_end,
+                                                curr_location.admission_date,
+                                                curr_location.discharge_date)):
+
+                    # Find the time slot of the overlap
+                    overlap = two_date_blocks_calculate_overlap(location_start, location_end,
+                                                                curr_location.admission_date,
+                                                                curr_location.discharge_date)
+
+                    # Source individuals transmission date is the earliest date that a transmission can occur!!!
+                    if source.get('date_of_infection') < overlap.get('start'):
+
+                        return {
+                            'overlap_location_name': curr_location.name,
+                            'overlap_start': overlap.get('start'),
+                            'overlap_end': overlap.get('end')
+                        }
+        return False
+
     def initiate_outbreak_phase(self, previous_phase_output):
 
         current_phase_output = []
         outbreak_results = []
         outbreak_in_progress = True
 
+        level = self.outbreak_source.get('level')
+
         while outbreak_in_progress:
+
+            # Increment the phase level
+            level += 1
 
             for source in previous_phase_output:
 
                 source_individual_id = source.get('individual').id
-                print("New source %s" % source_individual_id)
 
                 # Check to see if this individual has already been a source of infection
                 if source_individual_id in self.infected_individuals:
                     continue
+
+                print("New source %s" % source_individual_id)
 
                 # Record the source so that they cannot be re-infected
                 self.infected_individuals.append(source_individual_id)
@@ -209,81 +290,48 @@ class OutbreakSimulator:
                     if self.individual_already_part_of_outbreak(source_individual_id, current_individual_id, uptodate_outbreak_list):
                         continue
 
-                    # for each of the sources locations
-                    for location in source['individual'].location_list:
-                        location_name = location.name
-                        location_start = location.admission_date
-                        location_end = location.discharge_date
+                    overlapping_location = self.individual_overlap_location(source, individual)
 
-                        # For each of the current individuals locations
-                        for curr_location in individual.location_list:
+                    if overlapping_location and self.transmission_occured():
 
-                            if (curr_location.name == location_name and
-                                    two_date_blocks_overlap(location_start, location_end,
-                                                            curr_location.admission_date,
-                                                            curr_location.discharge_date)):
+                        overlap_location_name = overlapping_location.get('overlap_location_name')
+                        overlap_start = overlapping_location.get('overlap_start')
+                        overlap_end = overlapping_location.get('overlap_end')
 
-                                # Find the time slot of the overlap
-                                overlap = two_date_blocks_calculate_overlap(location_start, location_end,
-                                                                            curr_location.admission_date,
-                                                                            curr_location.discharge_date)
+                        # Pick a date to simulate a transmission
+                        date_of_transmission = radar.random_date(
+                            start=overlap_start,
+                            stop=overlap_end,
+                        )
 
-                                # Source individuals transmission date is the earliest date that a transmission can occur!!!
-                                if source.get('date_of_infection') < overlap.get('start'):
+                        # Pick a date within the overlap to create a sample date, this would be ideal to know but not
+                        # realistic in the real world, the date would be after.
+                        # TODO: Define a metric of delay between the date of transmission vs sample
 
-                                    # Pick a date to simulate a transmission
-                                    date_of_transmission = radar.random_date(
-                                        start=overlap.get('start'),
-                                        stop=overlap.get('end'),
-                                    )
+                        current_phase_output.append({
+                            'source_individual': source_individual_id,
+                            'individual': individual,  # Individual object
+                            'location': overlap_location_name,
+                            'date_of_infection': date_of_transmission,
+                            'overlap_start': overlap_start,
+                            'overlap_end': overlap_end,
+                        })
 
-                                    # Pick a date within the overlap to create a sample date, this would be ideal to know but not
-                                    # realistic in the real world, the date would be after.
-                                    # TODO: Define a metric of delay between the date of transmission vs sample
+                        self.writer.writerow({
+                            'source_individual': source_individual_id,
+                            'individual': current_individual_id,
+                            'location': overlap_location_name,
+                            'date_of_infection': date_of_transmission,
+                            'level': level
+                        })
 
-                                    current_phase_output.append({
-                                        'source_individual': source_individual_id,
-                                        'individual': individual,  # Individual object
-                                        'location': curr_location.name,
-                                        'date_of_infection': date_of_transmission,
-                                        'overlap_start': overlap.get('start'),
-                                        'overlap_end': overlap.get('end'),
-                                    })
+                        self.stats.add_isolate()
 
-                                    self.writer.writerow({
-                                        'source_individual': source_individual_id,
-                                        'individual': current_individual_id,
-                                        'location': curr_location.name,
-                                        'date_of_infection': date_of_transmission
-                                    })
+                        # Generate an isolate id
+                        isolate_id = self.isolate_start_id + len(self.master_isolate_list)
 
-                                    self.stats.add_isolate()
+                        self.add_isolate(isolate_id, current_individual_id, date_of_transmission)
 
-                                    #######
-                                    # Isolate stuff
-                                    ######
-
-                                    # Generate an isolate id
-                                    isolate_id = 'MPROS' + str(ISOLATE_COUNT + len(self.master_isolate_list))
-                                    # Randomly select a sample type
-                                    sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
-
-                                    building_sent_from_name = ISOLATE_IN_PATIENT_SAMPLE_BUILDING
-                                    building_sent_from_location = "unkown"
-
-
-
-                                    new_isolate = Isolate(isolate_id)
-                                    new_isolate.individual_id = current_individual_id
-                                    new_isolate.sample_type = sample_type
-                                    new_isolate.sample_description = random.choice(ISOLATE_SAMPLE_DESCRIPTION)
-                                    # FIXME: Not actually the date taken, this is also misleading as the sample would be taken after the actual infection!!!!
-                                    new_isolate.date_sent = date_of_transmission
-                                    new_isolate.sent_from_location = building_sent_from_location
-                                    new_isolate.sent_from_name = building_sent_from_name
-                                    new_isolate.antibiogram = self.outbreak_source.get('antibiogram')
-
-                                    self.master_isolate_list.append(new_isolate)
 
             # if the outbreak has finished
             if not current_phase_output:
