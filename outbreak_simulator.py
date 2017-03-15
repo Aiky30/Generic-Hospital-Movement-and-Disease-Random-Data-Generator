@@ -24,6 +24,8 @@ OUTPUT_OUTBREAK_HEADINGS = [
 DISEASE_CALC_LIST = range(1, 10)
 DISEASE_SEVERITY = 3  # 1 is low, 10 is high
 
+SOURCE_INDIVIDUAL_MIN_LOCATION_COUNT = 2
+
 # TODO: Need the time that the overlap occured to better add an isolate date!!
 # FIXME: Should be an external package!!
 def two_date_blocks_overlap(master_start, master_end, test_start, test_end):
@@ -142,8 +144,10 @@ class OutbreakSimulator:
 
         self.master_isolate_list.append(new_isolate)
 
+
+
     # Only choose an individual that has had locations or else this oubreak is useless!!
-    def choose_suitable_individual(self, min_locations=3):
+    def choose_suitable_individual(self, min_locations=SOURCE_INDIVIDUAL_MIN_LOCATION_COUNT):
 
         individual_lottery = True
 
@@ -331,7 +335,6 @@ class OutbreakSimulator:
                         isolate_id = self.isolate_start_id + len(self.master_isolate_list)
 
                         self.add_isolate(isolate_id, current_individual_id, date_of_transmission)
-
 
             # if the outbreak has finished
             if not current_phase_output:

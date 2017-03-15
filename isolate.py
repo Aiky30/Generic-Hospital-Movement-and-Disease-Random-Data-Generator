@@ -6,7 +6,7 @@ import random
 import csv
 import radar
 
-
+#FIXME: Somehow an individual who is set an isolate can be set muleiplte isolates. This should nto be possible!!
 
 class IsolateRandomSimulator:
 
@@ -25,17 +25,18 @@ class IsolateRandomSimulator:
         while individual_not_found:
 
             # Randomly select an individual
-            new_random_individual = random.choice(INDIVIDUAL_LIST)
+            new_random_individual = random.choice(self.movement.individual_list)
 
             # Ensure that the individual is not part of an existing outbreak!!
-            if new_random_individual not in self.outbreak.infected_individuals:
+            if new_random_individual.id not in self.outbreak.infected_individuals:
                 return new_random_individual
 
     def generate_isolates(self):
         for isolate in ISOLATE_LIST:
 
             # Randomly select an individual
-            new_random_individual = self.get_random_individual()
+            random_individual = self.get_random_individual()
+            random_individual_id = random_individual.id
 
             # Randomly select a sample type
             sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
@@ -44,11 +45,7 @@ class IsolateRandomSimulator:
             isolate_id = isolate
 
             # Is the randomly selected individual an in patient
-            if new_random_individual < len(self.movement.individual_list):
-
-                random_individual = self.movement.individual_list[new_random_individual]
-
-                random_individual_id = random_individual.id
+            if random_individual_id < len(self.movement.individual_list):
 
                 # randomly select a date within the individuals admissions
                 # Random admission
@@ -64,8 +61,6 @@ class IsolateRandomSimulator:
 
             # Otherwise the individual is an outpatient
             else:
-
-                random_individual_id = new_random_individual
 
                 # Generate a random date
                 random_date = radar.random_date(
