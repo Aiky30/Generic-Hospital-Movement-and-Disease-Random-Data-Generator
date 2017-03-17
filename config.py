@@ -7,7 +7,7 @@ IN_PATIENT_COUNT = 2000
 OUT_PATIENT_COUNT = 0
 
 INDIVIDUAL_COUNT = IN_PATIENT_COUNT + OUT_PATIENT_COUNT
-ISOLATE_COUNT = 500
+ISOLATE_COUNT = 100
 ANTIBIOGRAM_RESULT_BANK_COUNT = 20
 LOCATION_COUNT = 114
 
@@ -22,7 +22,7 @@ OUT_PATIENT_LIST = range(IN_PATIENT_COUNT, INDIVIDUAL_COUNT)
 
 # Location
 LOCATION_AVG_COUNT = range(1, 3)  # (+/- 10%)
-LOCATION_DURATION_PER_COUNT = 14  # In days
+LOCATION_DURATION_PER_COUNT = 6  # In days
 
 #FIXME: Some areas will have a higher value than others, i.e. A&E would have a different average duration!!
 #       That would also affect how many locations the individual had, A&E wopuld be the only one for some etc.
@@ -36,7 +36,7 @@ for location in range(1, LOCATION_COUNT):
 
 # Admission
 ADMISSION_MIN_DURATION = 1440 * 1  # In mins (calculated to days)
-ADMISSION_MAX_DURATION = 1440 * 50  # In mins (calculated to days)
+ADMISSION_MAX_DURATION = 1440 * 30  # In mins (calculated to days)
 ADMISSION_AVG_COUNT = 1
 ADMISSION_AVG_DURATION = range(ADMISSION_MIN_DURATION, ADMISSION_MAX_DURATION)
 
@@ -45,7 +45,7 @@ DATE_END = datetime.today() - relativedelta(minutes=ADMISSION_MAX_DURATION)
 DATE_START = DATE_END - relativedelta(years=1)
 DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.html
 
-ISOLATE_DATE_FORMAT = "%m/%d/%y"
+ISOLATE_DATE_FORMAT = "%m/%d/%y %H:%M"
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 #BASE_DIR = '/srv/www/development/imperial-college/gismoh-v2/backend/data/mrsa001_data'

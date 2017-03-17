@@ -151,18 +151,29 @@ class OutbreakSimulator:
 
         individual_lottery = True
 
+        #FIXME: Shoudl be a config
+        latest_admission_date = DATE_START + relativedelta(month=3)
+
         while individual_lottery:
 
             individual = random.choice(self.movement.individual_list)
 
+            print("Checking suitability of: %s" % individual.id)
+
             # Check that the individual has locations making it a suitable candidate
             if len(individual.location_list) >= min_locations:
-                return individual
+
+                # Only select an individual who is close to the beginning of the artificial data set
+                if individual.admission_list[0].admission_date < latest_admission_date:
+                    return individual
 
     def create_outbreak_source(self):
 
         #FIXME: USe the antibiogram object helpers!!
         chosen_antibiogram = self.antibiogram.choose_random_antibiogram()
+
+        # Remove the antibiogram so that it cannot be used again creating noise
+        self.antibiogram.antibiogram_list.remove(chosen_antibiogram)
 
         chosen_individual = self.choose_suitable_individual()
 
