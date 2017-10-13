@@ -149,31 +149,57 @@ class OutbreakSimulator:
     # Only choose an individual that has had locations or else this oubreak is useless!!
     def choose_suitable_individual(self, min_locations=SOURCE_INDIVIDUAL_MIN_LOCATION_COUNT):
 
-        individual_lottery = True
 
-        #FIXME: Shoudl be a config
-        latest_admission_date = DATE_START + relativedelta(month=3)
+        if OUTBREAK_SIMULATOR_RANDOM_INDIVIDUAL_SELECTION:
+            """
+            # A Method of random selection of a suitable individual
+            """
+            rotation = 0
+            while True:
+                rotation += 1
 
-        while individual_lottery:
+                if(rotation > 1000000):
+                    print("Rotation: %s" % str(rotation))
+                    print("Consider re running")
 
-            individual = random.choice(self.movement.individual_list)
+                individual = random.choice(self.movement.individual_list)
 
-            print("Checking suitability of: %s" % individual.id)
+                print("Checking suitability id: %s, locations: %s" % (individual.id, len(individual.location_list)))
 
-            # Check that the individual has locations making it a suitable candidate
-            if len(individual.location_list) >= min_locations:
+                # Check that the individual has locations making it a suitable candidate
+                if len(individual.location_list) >= min_locations:
 
-                # Only select an individual who is close to the beginning of the artificial data set
-                if individual.admission_list[0].admission_date < latest_admission_date:
-                    return individual
+                    print("Checking admission dates for suitability %s" % individual.admission_list[0].admission_date)
+
+                    # Only select an individual who is close to the beginning of the artificial data set
+                    if individual.admission_list[0].admission_date < OUTBREAK_SIMULATOR_ADMISSION_CUT_OFF_DATE:
+                        print("Found Suitable individual: %s" % individual.id)
+                        return individual
+        else:
+            """
+            # An ordered method of random selection of a suitable individual
+            """
+            for individual in self.movement.individual_list:
+
+                # Check that the individual has locations making it a suitable candidate
+                if len(individual.location_list) >= min_locations:
+
+                    #print("Checking admission dates for suitability %s" % individual.admission_list[0].admission_date)
+
+                    # Only select an individual who is close to the beginning of the artificial data set
+                    if individual.admission_list[0].admission_date < OUTBREAK_SIMULATOR_ADMISSION_CUT_OFF_DATE:
+                        print("Found Suitable individual: %s" % individual.id)
+                        return individual
+
 
     def create_outbreak_source(self):
 
         #FIXME: USe the antibiogram object helpers!!
         chosen_antibiogram = self.antibiogram.choose_random_antibiogram()
 
+        # FIXME: Caused an issue where a continual loop ran out of options
         # Remove the antibiogram so that it cannot be used again creating noise
-        self.antibiogram.antibiogram_list.remove(chosen_antibiogram)
+        #self.antibiogram.antibiogram_list.remove(chosen_antibiogram)
 
         chosen_individual = self.choose_suitable_individual()
 
@@ -218,7 +244,11 @@ class OutbreakSimulator:
             outbreak_source = outbreak_case.get('source_individual')
 
             # The source is different but the individual has been infected before
-            if current_individual == outbreak_individual and source_individual != outbreak_source:
+            if(
+                (current_individual == outbreak_individual and source_individual != outbreak_source)
+                # Or the individual is the source
+                or (outbreak_individual == self.outbreak_source.get('individual').id)
+               ):
                 return True
 
         return False

@@ -40,6 +40,11 @@ class MasterResultSet:
 
 def main():
 
+    print("Starting model")
+    print("Start date: %s" % DATE_START)
+    print("End date: %s" % DATE_END)
+
+
     master_resultset = MasterResultSet()
 
 
@@ -47,7 +52,15 @@ def main():
 
     movement = Movement()
 
-    outbreak = OutbreakSimulator(movement, antibiogram, master_resultset)
+    find_ideal_outbreak = True
+    while find_ideal_outbreak:
+
+        outbreak = OutbreakSimulator(movement, antibiogram, master_resultset)
+
+        # If the ideal size matches break the loop
+        if(OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN < len(outbreak.infected_individuals) < OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX):
+            find_ideal_outbreak = False
+
 
     # TODO: Link the outbreak data into the isolate file,
     #          the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns

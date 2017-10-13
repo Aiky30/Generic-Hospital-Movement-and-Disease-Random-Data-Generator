@@ -5,9 +5,14 @@ import csv
 import radar
 import math
 
-
 from models import *
 
+
+def random_date(start, stop):
+    return radar.random_date(
+        start=start,
+        stop=stop
+    )
 
 class Movement:
 
@@ -129,7 +134,7 @@ class Movement:
         duration = random.choice(master_duration)
 
         # Generate a random date between the specified time period
-        start_date = radar.random_date(
+        start_date = random_date(
             start=master_start_date,
             stop=master_end_date
         )

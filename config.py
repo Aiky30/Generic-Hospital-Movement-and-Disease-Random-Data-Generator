@@ -21,7 +21,7 @@ IN_PATIENT_LIST = range(1, IN_PATIENT_COUNT)
 OUT_PATIENT_LIST = range(IN_PATIENT_COUNT, INDIVIDUAL_COUNT)
 
 # Location
-LOCATION_AVG_COUNT = range(1, 3)  # (+/- 10%)
+LOCATION_AVG_COUNT = range(1, 4)  # (+/- 10%)
 LOCATION_DURATION_PER_COUNT = 6  # In days
 
 #FIXME: Some areas will have a higher value than others, i.e. A&E would have a different average duration!!
@@ -41,11 +41,12 @@ ADMISSION_AVG_COUNT = 1
 ADMISSION_AVG_DURATION = range(ADMISSION_MIN_DURATION, ADMISSION_MAX_DURATION)
 
 # Global
-DATE_END = datetime.today() - relativedelta(minutes=ADMISSION_MAX_DURATION)
+DATE_END = datetime.today() + timedelta(days=4)
+#DATE_END = datetime.today() - relativedelta(minutes=ADMISSION_MAX_DURATION)
 DATE_START = DATE_END - relativedelta(years=1)
 DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.html
 
-ISOLATE_DATE_FORMAT = "%m/%d/%y %H:%M"
+ISOLATE_DATE_FORMAT = "%m/%d/%y"
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 #BASE_DIR = '/srv/www/development/imperial-college/gismoh-v2/backend/data/mrsa001_data'
@@ -213,3 +214,17 @@ ANTIBIOGRAM_ANTIBIOTICS = [
 ]
 
 ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S', 'I', 'R']
+
+"""
+# Outbreak Simulator
+"""
+
+OUTBREAK_SIMULATOR_ADMISSION_CUT_OFF_DATE = DATE_START + relativedelta(months=6)
+
+# Randomly select an individual
+# If True loop indefinetly until a match is found
+# If False loop through the individuals in the order that they were created until a match is found
+OUTBREAK_SIMULATOR_RANDOM_INDIVIDUAL_SELECTION = True
+
+OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN = 40
+OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX = 100
