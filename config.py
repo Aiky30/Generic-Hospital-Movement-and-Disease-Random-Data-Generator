@@ -219,12 +219,12 @@ ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S', 'I', 'R']
 # Outbreak Simulator
 """
 
-OUTBREAK_SIMULATOR_ADMISSION_CUT_OFF_DATE = DATE_START + relativedelta(months=6)
+OUTBREAK_SIMULATOR_ADMISSION_CUT_OFF_DATE = DATE_START + relativedelta(months=10)
 
 # Randomly select an individual
 # If True loop indefinetly until a match is found
 # If False loop through the individuals in the order that they were created until a match is found
 OUTBREAK_SIMULATOR_RANDOM_INDIVIDUAL_SELECTION = True
 
-OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN = 40
-OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX = 100
+#OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN = 40
+#OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX = 100

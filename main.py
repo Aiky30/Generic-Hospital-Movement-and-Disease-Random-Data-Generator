@@ -52,6 +52,12 @@ def main():
 
     movement = Movement()
 
+    outbreak = OutbreakSimulator(movement, antibiogram, master_resultset)
+
+    """
+    # FIXME: Using this method adds the source isolate to the master result set so you have many failed attempts added first with the same id
+    
+
     find_ideal_outbreak = True
     while find_ideal_outbreak:
 
@@ -61,6 +67,7 @@ def main():
         if(OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN < len(outbreak.infected_individuals) < OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX):
             find_ideal_outbreak = False
 
+    """
 
     # TODO: Link the outbreak data into the isolate file,
     #          the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns

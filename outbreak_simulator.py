@@ -198,6 +198,7 @@ class OutbreakSimulator:
         chosen_antibiogram = self.antibiogram.choose_random_antibiogram()
 
         # FIXME: Caused an issue where a continual loop ran out of options
+        # FYI: Could argue that in real life the same strain will occur completley unrelated
         # Remove the antibiogram so that it cannot be used again creating noise
         #self.antibiogram.antibiogram_list.remove(chosen_antibiogram)
 
