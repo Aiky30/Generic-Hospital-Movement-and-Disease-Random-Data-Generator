@@ -81,8 +81,7 @@ class Movement:
             ###############
 
             # Number of admissions
-
-            admission = self.generate_random_admission(DATE_START, DATE_END, ADMISSION_AVG_DURATION)
+            admission = self.generate_random_admission(MOVEMENT_DATE_START, MOVEMENT_DATE_END, ADMISSION_AVG_DURATION)
 
             admission_start_date = admission['start']
             admission_end_date = admission['end']

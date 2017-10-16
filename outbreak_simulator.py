@@ -9,23 +9,6 @@ import radar
 from dateutil.relativedelta import relativedelta
 
 
-OUTPUT_OUTBREAK_REPORT_FILENAME = os.path.join(BASE_DIR, 'Outbreak.csv')
-
-OUTPUT_OUTBREAK_HEADINGS = [
-    'source_individual',
-    'individual',
-    'location',
-    'date_of_infection',
-    'level'
-]
-
-# FIXME: Requires plumbing!!
-# TODO: Could be a range and randomly selected max / min multiplier
-DISEASE_CALC_LIST = range(1, 10)
-DISEASE_SEVERITY = 3  # 1 is low, 10 is high
-
-SOURCE_INDIVIDUAL_MIN_LOCATION_COUNT = 2
-
 # TODO: Need the time that the overlap occured to better add an isolate date!!
 # FIXME: Should be an external package!!
 def two_date_blocks_overlap(master_start, master_end, test_start, test_end):
