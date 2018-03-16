@@ -97,7 +97,7 @@ class Movement:
             # Organise the randomly selected dates into the admission
             location_dates = self.generate_movement_list_dates(admission['start'], admission['end'], location_count)
 
-            for i, locations_preselected in enumerate(xrange(0, location_count)):
+            for i, locations_preselected in enumerate(range(0, location_count)):
 
                 location_start_date = location_dates[i]['start']
                 location_end_date = location_dates[i]['end']
