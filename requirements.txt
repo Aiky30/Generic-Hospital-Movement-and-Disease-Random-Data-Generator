@@ -2,4 +2,4 @@ argparse==1.2.1
 python-dateutil==2.5.3
 radar==0.3
 six==1.10.0
--e git+git@github.com:Aiky30/csv-to-json.git#egg=csv-to-json
+-e git+git@github.com:Aiky30/csv_to_json.git#egg=csv_to_json

@@ -53,8 +53,12 @@ DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.htm
 
 ISOLATE_DATE_FORMAT = "%m/%d/%y"
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
-#BASE_DIR = '/srv/www/development/imperial-college/gismoh-v2/backend/data/mrsa001_data'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+DATA_DIR = os.path.join(os.path.dirname(BASE_DIR), 'data')
+
+JS_FILE = os.path.join(DATA_DIR, 'outbreak.js')
+
 
 # Output movement file
 OUTPUT_MOVEMENT_HEADINGS = [
@@ -68,7 +72,7 @@ OUTPUT_MOVEMENT_HEADINGS = [
     'diagnostics',
 ]
 
-OUTPUT_MOVEMENT_FILENAME = os.path.join(BASE_DIR, 'movement.csv')
+OUTPUT_MOVEMENT_FILENAME = os.path.join(DATA_DIR, 'movement.csv')
 
 
 # Output movement file
@@ -128,7 +132,7 @@ ISOLATE_OUT_PATIENT_SAMPLE_BUILDING = [
     },
 ]
 
-OUTPUT_ISOLATE_FILENAME = os.path.join(BASE_DIR, 'isolate.csv')
+OUTPUT_ISOLATE_FILENAME = os.path.join(DATA_DIR, 'isolate.csv')
 
 
 # Bacteria / disease
@@ -162,7 +166,7 @@ OUTBREAK_SIMULATOR_RANDOM_INDIVIDUAL_SELECTION = True
 #OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MIN = 40
 #OUTBREAK_SIMULATOR_IDEAL_INFECTION_COUNT_MAX = 100
 
-OUTPUT_OUTBREAK_REPORT_FILENAME = os.path.join(BASE_DIR, 'outbreak.csv')
+OUTPUT_OUTBREAK_REPORT_FILENAME = os.path.join(DATA_DIR, 'outbreak.csv')
 
 OUTPUT_OUTBREAK_HEADINGS = [
     'source_individual',

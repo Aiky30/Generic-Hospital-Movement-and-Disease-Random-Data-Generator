@@ -1,0 +1,144 @@
+ var network;
+
+  var nodes=[];
+  var edges=[];
+
+  console.log("data: ", data.length)
+  // For each sample
+
+  var transmission_source = '';
+
+  data.forEach(function(transmission) {
+
+    //var level = new Date(transmission.date_of_infection).getTime()
+    var level = transmission.level;
+
+    console.log(level)
+
+    nodes.push({
+      id: transmission.individual,
+      label: transmission.individual,
+      level: level
+    });
+
+    // If the source individual isn't also the individual (Patient 0)
+    if(transmission.individual != transmission.source_individual) {
+      edges.push({
+        from: transmission.source_individual,
+        to: transmission.individual,
+        label: transmission.location + "\n" + transmission.date_of_infection
+      })
+    }
+
+  });
+
+  //nodes[0]["level"] = 0;
+
+  /*
+  {
+    "source_individual": "982",
+    "individual": "982",
+    "location": "W48",
+    "date_of_infection": "2016-07-14 05:35:20.793972"
+  }
+
+
+
+
+
+
+  edges.push({from: 1, to: individualNodeId})
+
+  this.network.setData({
+    nodes: nodes,
+    edges: edges
+  });
+  */
+  //window.innerWidth
+
+  function redrawAll() {
+    // remove positoins
+    for (var i = 0; i < nodes.length; i++) {
+      delete nodes[i].x;
+      delete nodes[i].y;
+    }
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+      nodes: nodes,
+      edges: edges
+    };
+    var options = {
+
+      nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30
+        },
+        font: {
+          size: 12,
+          face: 'Tahoma'
+        }
+      },
+      edges: {
+        width: 0.15,
+        color: {inherit: 'from'},
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      /*
+      physics: {
+        stabilization: true,
+
+        barnesHut: {
+          gravitationalConstant: -80000,
+          springConstant: 0.001,
+          springLength: 200
+        }
+
+      },
+      physics: {
+        hierarchicalRepulsion: {
+            springLength: 70,
+            nodeDistance: 100
+        },
+        timestep: 0.40,
+        stabilization: {
+            enabled: true,
+            iterations: 2000,
+            updateInterval: 30,
+            fit: false
+        }
+    },
+      */
+      physics: {
+        stabilization: true,
+        barnesHut: {
+          gravitationalConstant: -80000,
+          springConstant: 0.001,
+          springLength: 200
+        }
+      },
+      interaction: {
+        tooltipDelay: 200,
+        hideEdgesOnDrag: true
+      },
+      layout: {
+          hierarchical: {
+              levelSeparation: 1000,
+              nodeSpacing: 350,
+              parentCentralization: true,
+              direction: 'LR', //UD, DU, LR, RL
+              blockShifting: false
+          }
+      }
+    };
+
+    // Note: data is coming from ./datasources/WorldCup2014.js
+    network = new vis.Network(container, data, options);
+  }
+
+  redrawAll();

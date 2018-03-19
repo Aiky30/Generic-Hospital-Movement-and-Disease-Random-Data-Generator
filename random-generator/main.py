@@ -4,6 +4,8 @@ from movement import Movement
 from antibiogram import Antibiogram
 from isolate import IsolateRandomSimulator, IsolateOutput
 from outbreak_simulator import OutbreakSimulator
+
+import csv_to_json
 """
 Generic Hospital Movement and Disease Random Data Generator (GHMDRDG)
 ===================================================
@@ -91,6 +93,11 @@ def main():
 
         IsolateWriter writes out the completed list of isolates
     """
+
+    csv_to_json.main({
+        'input': OUTPUT_OUTBREAK_REPORT_FILENAME,
+        'output': JS_FILE
+    })
 
     exit(0)
 
