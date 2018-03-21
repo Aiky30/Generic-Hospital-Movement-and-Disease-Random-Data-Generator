@@ -122,12 +122,12 @@ class IsolateOutput:
 
             current_row = {
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['patient_id']: isolate.individual_id,
-                'DateSent': isolate.date_sent.strftime(config.ISOLATE_DATE_FORMAT),
-                'Originaldescription': isolate.sample_description,
-                'Sampletype': isolate.sample_type,
-                'SampleID': isolate.id,
-                'GPHospital': isolate.sent_from_name,
-                'Location': isolate.sent_from_location
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['date']: isolate.date_sent.strftime(config.ISOLATE_DATE_FORMAT),
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_description']: isolate.sample_description,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_type']: isolate.sample_type,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_id']: isolate.id,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_name']: isolate.sent_from_name,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_location']: isolate.sent_from_location,
             }
 
             mapped_antibiogram = self.antibiogram.get_antibiogram_map(isolate.antibiogram, config.ANTIBIOGRAM_ANTIBIOTICS)

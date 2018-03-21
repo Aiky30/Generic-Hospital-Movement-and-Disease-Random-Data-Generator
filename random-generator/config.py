@@ -62,21 +62,28 @@ JS_FILE = os.path.join(DATA_DIR, 'outbreak.js')
 
 # Output movement file
 OUTPUT_MOVEMENT_HEADINGS = [
+    'AnonPtNo',
     'EpisodeAdmissionDate',
     'EpisodeDischargeDate',
     'SpellDischargeDate',
     'SpellAdmissionDate',
     'Ward',
-    'AnonPtNo',
     'Hospital',
 ]
 
 OUTPUT_MOVEMENT_FILENAME = os.path.join(DATA_DIR, 'movement.csv')
 
 
+
 # FIXME: This method of setting the headings is the preferred method. Currently testing!!
 OUTPUT_MOVEMENT_HEADING_MAPPING = {
-    'patient_id': 'AnonPtNo'
+    'patient_id': 'AnonPtNo',
+    'location_start_date': 'EpisodeAdmissionDate',
+    'location_end_date': 'EpisodeDischargeDate',
+    'admission_end_date': 'SpellDischargeDate',
+    'admission_start_date': 'SpellAdmissionDate',
+    'location': 'Ward',
+    'site': 'Hospital',
 }
 
 # Output movement file
@@ -96,9 +103,15 @@ OUTPUT_ISOLATE_HEADINGS = [
     'Chloramphenicol',
 ]
 
-# FIXME: This method of setting the headings is the preferred method. Currently testing!!
+# FIXME: This method of setting the headings is the preferred method. Complicated by Antibiogram headings!! Currently testing!!
 OUTPUT_ISOLATE_HEADING_MAPPING = {
-    'patient_id': 'AnonPtNo'
+    'patient_id': 'AnonPtNo',
+    'date': 'DateSent',
+    'sample_description': 'Originaldescription',
+    'sample_type': 'Sampletype',
+    'sample_id': 'SampleID',
+    'sent_from_name': 'GPHospital',
+    'sent_from_location': 'Location',
 }
 
 ISOLATE_SAMPLE_DESCRIPTION = [
@@ -117,17 +130,17 @@ ISOLATE_SAMPLE_TYPE = [
     'Pus or swab, to be verified',
 ]
 
-ISOLATE_IN_PATIENT_SAMPLE_BUILDING = "AddiesWards"
+ISOLATE_IN_PATIENT_SAMPLE_BUILDING = "St Andrews In patient"
 
 ISOLATE_OUT_PATIENT_SAMPLE_BUILDING = [
     {
-        'name': 'AddiesDayUnit',
+        'name': 'Hospital Day Unit',
         'locations': [
-            'Haematology DU Box 259',
+            'Haematology DU Box 459',
         ]
     },
     {
-        'name': 'Hinch',
+        'name': 'Hospital procedure unit',
         'locations': [
             'Hinch Procedure Unit',
         ]
@@ -135,8 +148,8 @@ ISOLATE_OUT_PATIENT_SAMPLE_BUILDING = [
     {
         'name': 'GP',
         'locations': [
-            'GP - SAWTRY, 45 High Street',
-            'GP-BARLEY, The Surgery,High St',
+            'GP-1, SomeSurgery, 32 High Street',
+            'GP-2, The Surgery, 86 High St',
         ]
     },
 ]

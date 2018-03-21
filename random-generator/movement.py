@@ -58,10 +58,6 @@ class Movement:
 
     def generate_movement(self, writer):
 
-        ###############
-        # Individual
-        ###############
-
         """
         for entry in xrange(0, INDIVIDUAL_COUNT):
         # FIXME: Exclude individuals already chosen!!
@@ -108,13 +104,13 @@ class Movement:
 
                 # Write the entry to the output file
                 writer.writerow({
-                    'EpisodeAdmissionDate': location_start_date.strftime(config.DATE_FORMAT),
-                    'EpisodeDischargeDate': location_end_date.strftime(config.DATE_FORMAT),
-                    'SpellDischargeDate': admission_end_date.strftime(config.DATE_FORMAT),
-                    'SpellAdmissionDate': admission_start_date.strftime(config.DATE_FORMAT),
-                    'Ward': location_selected,
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['location_start_date']: location_start_date.strftime(config.DATE_FORMAT),
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['location_end_date']: location_end_date.strftime(config.DATE_FORMAT),
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['admission_end_date']: admission_end_date.strftime(config.DATE_FORMAT),
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['admission_start_date']: admission_start_date.strftime(config.DATE_FORMAT),
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['location']: location_selected,
                     config.OUTPUT_MOVEMENT_HEADING_MAPPING['patient_id']: individual_id,
-                    'Hospital': 'AddiesWards'
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['site']: 'St Andrews Hospital',
                 })
 
                 generated_location = Location(location_selected, location_start_date, location_end_date)
