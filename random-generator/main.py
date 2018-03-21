@@ -1,4 +1,4 @@
-from config import *
+import config
 
 from movement import Movement
 from antibiogram import Antibiogram
@@ -6,49 +6,45 @@ from isolate import IsolateRandomSimulator, IsolateOutput
 from outbreak_simulator import OutbreakSimulator
 
 import csv_to_json
+
 """
-Generic Hospital Movement and Disease Random Data Generator (GHMDRDG)
+Generic Hospital Movement and Disease Random Data Generator
 ===================================================
 
-Running: ~/virtual_environments/development/movement-and-disease-random-generator/bin/python2.7 ./random_generator.py
+Running: python3 random_generator/main.py
 
 locations list (read from file)
 
-TODO: Going to get overlaps so need to see if an individual has been admitted on a certain date which woudl cause clash
+# TODO list:
 
-Metrics are on:
- - Patient count
- - Admission count
- - Location count
- - Antibiogram count
+ Make one method of antibiogram more popular than others, some kind of percentage based allocation in the random selection.
+ Config for AB
+
+ keep the dates in check, minus the longet admission duration from the last date then the end date can't conflict with it.
+
+ Link the outbreak data into the isolate file, the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns
+
+ Metrics are on:
+  - Patient count
+  - Admission count
+  - Location count
+  - Antibiogram count
 """
 
-# TODO: To keep the dates in check, minus the longet admission duration from the last date then the end date can't conflict with it.
-
-# IDEA: Min, Max and avrg could be the algorithm for random
-# FIXME: Randomise dates: http://stackoverflow.com/questions/553303/generate-a-random-date-between-two-other-dates
-
-"""
-
-IDEA: Make one method of antibiogram more popular than others, some kind of percentage based allocation in the random selection.
-
-
-Config for AB
-"""
 
 class MasterResultSet:
     def __init__(self):
         self.isolate_list = []
 
+
 def main():
 
     print("Starting model")
-    print("Start date: %s" % DATE_START)
-    print("End date: %s" % DATE_END)
+    print("Start date: %s" % config.DATE_START)
+    print("End date: %s" % config.DATE_END)
 
 
     master_resultset = MasterResultSet()
-
 
     antibiogram = Antibiogram()
 
@@ -71,32 +67,13 @@ def main():
 
     """
 
-    # TODO: Link the outbreak data into the isolate file,
-    #          the isolate file should add additional samples and also miss some, any missed should be recorded as missed to eliminate any unknowns
-
     IsolateRandomSimulator(movement, antibiogram, outbreak, master_resultset)
 
     IsolateOutput(antibiogram, master_resultset)
 
-    """
-
-        Isolate file writer takes the generated isolate list
-
-        Generate movement
-        Generate outbreak
-        Generate isolates / samples from the outbreak data
-        Generate random isolate list
-
-        IsolateOutbreakSimulator
-        IsolateRandomSimulator
-
-
-        IsolateWriter writes out the completed list of isolates
-    """
-
     csv_to_json.main({
-        'input': OUTPUT_OUTBREAK_REPORT_FILENAME,
-        'output': JS_FILE
+        'input': config.OUTPUT_OUTBREAK_REPORT_FILENAME,
+        'output': config.JS_FILE
     })
 
     exit(0)
