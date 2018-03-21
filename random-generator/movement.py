@@ -1,11 +1,12 @@
-from config import *
+import config
 
 import random
 import csv
 import radar
 import math
+from datetime import timedelta
 
-from models import *
+from models import Location, Individual, Admission
 
 
 def random_date(start, stop):
@@ -13,6 +14,7 @@ def random_date(start, stop):
         start=start,
         stop=stop
     )
+
 
 class Movement:
 
@@ -32,7 +34,7 @@ class Movement:
 
     def generate_individuals(self):
 
-        for individual_id in IN_PATIENT_LIST:
+        for individual_id in config.IN_PATIENT_LIST:
 
             individual = Individual(individual_id)
             self.add_individual(individual)
@@ -42,9 +44,9 @@ class Movement:
         # Open file for writing
         try:
             # Open the file with option 'rU' Enable Universal newline support
-            with open(OUTPUT_MOVEMENT_FILENAME, 'w') as csvfile:
+            with open(config.OUTPUT_MOVEMENT_FILENAME, 'w') as csvfile:
 
-                writer = csv.DictWriter(csvfile, fieldnames=OUTPUT_MOVEMENT_HEADINGS)
+                writer = csv.DictWriter(csvfile, fieldnames=config.OUTPUT_MOVEMENT_HEADINGS)
                 writer.writeheader()
 
                 self.generate_movement(writer)
@@ -68,7 +70,7 @@ class Movement:
         """
 
         # Shuffle the list to mix the id's around a little
-        #random.shuffle(INDIVIDUAL_LIST)
+        # random.shuffle(INDIVIDUAL_LIST)
 
         output = []
 
@@ -81,7 +83,7 @@ class Movement:
             ###############
 
             # Number of admissions
-            admission = self.generate_random_admission(MOVEMENT_DATE_START, MOVEMENT_DATE_END, ADMISSION_AVG_DURATION)
+            admission = self.generate_random_admission(config.MOVEMENT_DATE_START, config.MOVEMENT_DATE_END, config.ADMISSION_AVG_DURATION)
 
             admission_start_date = admission['start']
             admission_end_date = admission['end']
@@ -91,7 +93,7 @@ class Movement:
             ###############
 
             # Calculate number of movements
-            location_count = self.generate_location_count(admission_start_date, admission_end_date, LOCATION_DURATION_PER_COUNT, LOCATION_AVG_COUNT)
+            location_count = self.generate_location_count(admission_start_date, admission_end_date, config.LOCATION_DURATION_PER_COUNT, config.LOCATION_AVG_COUNT)
 
             # Generate a random date between the admission start and end date
             # Organise the randomly selected dates into the admission
@@ -102,14 +104,14 @@ class Movement:
                 location_start_date = location_dates[i]['start']
                 location_end_date = location_dates[i]['end']
 
-                location_selected = random.choice(LOCATION_LIST)
+                location_selected = random.choice(config.LOCATION_LIST)
 
                 # Write the entry to the output file
                 writer.writerow({
-                    'EpisodeAdmissionDate': location_start_date.strftime(DATE_FORMAT),
-                    'EpisodeDischargeDate': location_end_date.strftime(DATE_FORMAT),
-                    'SpellDischargeDate': admission_end_date.strftime(DATE_FORMAT),
-                    'SpellAdmissionDate': admission_start_date.strftime(DATE_FORMAT),
+                    'EpisodeAdmissionDate': location_start_date.strftime(config.DATE_FORMAT),
+                    'EpisodeDischargeDate': location_end_date.strftime(config.DATE_FORMAT),
+                    'SpellDischargeDate': admission_end_date.strftime(config.DATE_FORMAT),
+                    'SpellAdmissionDate': admission_start_date.strftime(config.DATE_FORMAT),
                     'Ward': location_selected,
                     'AnonPtNo': individual_id,
                     'Hospital': 'AddiesWards'
