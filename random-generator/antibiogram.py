@@ -1,11 +1,8 @@
-from config import *
+import config
 
 import random
 import csv
-import radar
-
-from dateutil.relativedelta import relativedelta
-
+import sys
 
 class Antibiogram:
     """
@@ -34,19 +31,18 @@ class Antibiogram:
         antibiogram_list = []
 
         # Build a list of usable antibiograms
-        for index in ANTIBIOGRAM_RESULT_BANK:
+        for index in config.ANTIBIOGRAM_RESULT_BANK:
 
             antibiogram = {}
 
             # For each antibiogram antibiotic
-            for antibiotic in ANTIBIOGRAM_ANTIBIOTICS:
+            for antibiotic in config.ANTIBIOGRAM_ANTIBIOTICS:
                 # Allocate a random result to the antibiotic
-                antibiogram[antibiotic] = random.choice(ANTIBIOGRAM_ANTIBIOTIC_VALUES)
+                antibiogram[antibiotic] = random.choice(config.ANTIBIOGRAM_ANTIBIOTIC_VALUES)
 
             antibiogram_list.append(antibiogram)
 
         return antibiogram_list
-
 
     def get_antibiogram_list_from_file(self, filename):
         # Open file for reading
@@ -57,13 +53,13 @@ class Antibiogram:
                 reader = csv.DictReader(csvfile)
 
                 # Load the file into memory (FIXME: this won't work for big data sets)
-                mapped_data = []
+                # mapped_data = []
 
                 for row in reader:
 
                     row_data = {}
 
-                    for heading in ANTIBIOGRAM_SOURCE_FILE_HEADINGS:
+                    for heading in config.ANTIBIOGRAM_SOURCE_FILE_HEADINGS:
                         row_data.update({
                             heading: row[heading]
                         })
