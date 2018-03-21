@@ -69,11 +69,15 @@ OUTPUT_MOVEMENT_HEADINGS = [
     'Ward',
     'AnonPtNo',
     'Hospital',
-    'diagnostics',
 ]
 
 OUTPUT_MOVEMENT_FILENAME = os.path.join(DATA_DIR, 'movement.csv')
 
+
+# FIXME: This method of setting the headings is the preferred method. Currently testing!!
+OUTPUT_MOVEMENT_HEADING_MAPPING = {
+    'patient_id': 'AnonPtNo'
+}
 
 # Output movement file
 OUTPUT_ISOLATE_HEADINGS = [
@@ -91,6 +95,11 @@ OUTPUT_ISOLATE_HEADINGS = [
     'Erythromycin',
     'Chloramphenicol',
 ]
+
+# FIXME: This method of setting the headings is the preferred method. Currently testing!!
+OUTPUT_ISOLATE_HEADING_MAPPING = {
+    'patient_id': 'AnonPtNo'
+}
 
 ISOLATE_SAMPLE_DESCRIPTION = [
     'Multi site collection',

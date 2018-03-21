@@ -113,7 +113,7 @@ class Movement:
                     'SpellDischargeDate': admission_end_date.strftime(config.DATE_FORMAT),
                     'SpellAdmissionDate': admission_start_date.strftime(config.DATE_FORMAT),
                     'Ward': location_selected,
-                    'AnonPtNo': individual_id,
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['patient_id']: individual_id,
                     'Hospital': 'AddiesWards'
                 })
 

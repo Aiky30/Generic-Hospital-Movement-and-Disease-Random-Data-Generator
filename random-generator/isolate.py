@@ -121,7 +121,7 @@ class IsolateOutput:
         for isolate in self.isolate_list:
 
             current_row = {
-                'AnonPtNo': isolate.individual_id,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['patient_id']: isolate.individual_id,
                 'DateSent': isolate.date_sent.strftime(config.ISOLATE_DATE_FORMAT),
                 'Originaldescription': isolate.sample_description,
                 'Sampletype': isolate.sample_type,
