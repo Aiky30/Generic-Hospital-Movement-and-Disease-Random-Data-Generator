@@ -1,12 +1,12 @@
-from config import *
-from models import *
+import config
+from models import Isolate
 
-import sys
 import random
 import csv
 import radar
 
 #FIXME: Somehow an individual who is set an isolate can be set muleiplte isolates. This should nto be possible!!
+
 
 class IsolateRandomSimulator:
 
@@ -32,14 +32,15 @@ class IsolateRandomSimulator:
                 return new_random_individual
 
     def generate_isolates(self):
-        for isolate in ISOLATE_LIST:
+
+        for isolate in config.ISOLATE_LIST:
 
             # Randomly select an individual
             random_individual = self.get_random_individual()
             random_individual_id = random_individual.id
 
             # Randomly select a sample type
-            sample_type = random.choice(ISOLATE_SAMPLE_TYPE)
+            sample_type = random.choice(config.ISOLATE_SAMPLE_TYPE)
 
             # Generate an isolate id
             isolate_id = isolate
@@ -56,7 +57,7 @@ class IsolateRandomSimulator:
                     stop=random_admission.discharge_date,
                 )
 
-                building_sent_from_name = ISOLATE_IN_PATIENT_SAMPLE_BUILDING
+                building_sent_from_name = config.ISOLATE_IN_PATIENT_SAMPLE_BUILDING
                 building_sent_from_location = "unkown"
 
             # Otherwise the individual is an outpatient
@@ -64,11 +65,11 @@ class IsolateRandomSimulator:
 
                 # Generate a random date
                 random_date = radar.random_date(
-                    start=DATE_START,
-                    stop=DATE_END
+                    start=config.DATE_START,
+                    stop=config.DATE_END
                 )
 
-                building_sent_from = random.choice(ISOLATE_OUT_PATIENT_SAMPLE_BUILDING)
+                building_sent_from = random.choice(config.ISOLATE_OUT_PATIENT_SAMPLE_BUILDING)
 
                 building_sent_from_name = building_sent_from.get('name')
                 building_sent_from_location = random.choice(building_sent_from.get('locations'))
@@ -79,7 +80,7 @@ class IsolateRandomSimulator:
             new_isolate = Isolate(isolate_id)
             new_isolate.individual_id = random_individual_id
             new_isolate.sample_type = sample_type
-            new_isolate.sample_description = random.choice(ISOLATE_SAMPLE_DESCRIPTION)
+            new_isolate.sample_description = random.choice(config.ISOLATE_SAMPLE_DESCRIPTION)
             new_isolate.date_sent = random_date
             new_isolate.sent_from_location = building_sent_from_location
             new_isolate.sent_from_name = building_sent_from_name
@@ -88,6 +89,7 @@ class IsolateRandomSimulator:
             #mapped_antibiogram = self.antibiogram.get_antibiogram_map(random_antibiogram, ANTIBIOGRAM_ANTIBIOTICS)
 
             self.isolate_list.append(new_isolate)
+
 
 class IsolateOutput:
 
@@ -103,9 +105,9 @@ class IsolateOutput:
         # Open file for writing
         try:
             # Open the file with option 'rU' Enable Universal newline support
-            with open(OUTPUT_ISOLATE_FILENAME, 'w') as csvfile:
+            with open(config.OUTPUT_ISOLATE_FILENAME, 'w') as csvfile:
 
-                writer = csv.DictWriter(csvfile, fieldnames=OUTPUT_ISOLATE_HEADINGS)
+                writer = csv.DictWriter(csvfile, fieldnames=config.OUTPUT_ISOLATE_HEADINGS)
                 writer.writeheader()
 
                 self.write_output(writer)
@@ -120,7 +122,7 @@ class IsolateOutput:
 
             current_row = {
                 'AnonPtNo': isolate.individual_id,
-                'DateSent': isolate.date_sent.strftime(ISOLATE_DATE_FORMAT),
+                'DateSent': isolate.date_sent.strftime(config.ISOLATE_DATE_FORMAT),
                 'Originaldescription': isolate.sample_description,
                 'Sampletype': isolate.sample_type,
                 'SampleID': isolate.id,
@@ -128,7 +130,7 @@ class IsolateOutput:
                 'Location': isolate.sent_from_location
             }
 
-            mapped_antibiogram = self.antibiogram.get_antibiogram_map(isolate.antibiogram, ANTIBIOGRAM_ANTIBIOTICS)
+            mapped_antibiogram = self.antibiogram.get_antibiogram_map(isolate.antibiogram, config.ANTIBIOGRAM_ANTIBIOTICS)
 
             current_row.update(mapped_antibiogram)
 
