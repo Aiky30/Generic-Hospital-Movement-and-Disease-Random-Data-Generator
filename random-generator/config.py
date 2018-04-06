@@ -49,9 +49,9 @@ MOVEMENT_DATE_END = DATE_END - relativedelta(minutes=ADMISSION_MAX_DURATION)
 
 
 # Date formats
-DATE_FORMAT = "%m/%d/%y %H:%M"  # https://docs.python.org/2/library/datetime.html
+DATE_FORMAT = "%d/%m/%Y %H:%M"
 
-ISOLATE_DATE_FORMAT = "%m/%d/%y"
+ISOLATE_DATE_FORMAT = "%d/%m/%Y %H:%M"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -82,19 +82,17 @@ OUTPUT_MOVEMENT_HEADING_MAPPING = {
     'location_end_date': 'EpisodeDischargeDate',
     'admission_end_date': 'SpellDischargeDate',
     'admission_start_date': 'SpellAdmissionDate',
-    'location': 'Ward',
-    'site': 'Hospital',
 }
 
 # Output movement file
 OUTPUT_ISOLATE_HEADINGS = [
-    'AnonPtNo',
-    'DateSent',
-    'Originaldescription',
-    'Sampletype',
-    'SampleID',
-    'GPHospital',
-    'Location',
+    'patient_id',
+    'date_sent',
+    'description',
+    'sample_type',
+    'sample_id',
+    'test_method',
+    'organism',
     'Benzylpenicillin',
     'Cefoxitin',
     'Oxacillin',
@@ -104,14 +102,19 @@ OUTPUT_ISOLATE_HEADINGS = [
 ]
 
 # FIXME: This method of setting the headings is the preferred method. Complicated by Antibiogram headings!! Currently testing!!
+
+# FIXME: organism needs ot be randomly selected
+# Test method should also be randomly selected
 OUTPUT_ISOLATE_HEADING_MAPPING = {
-    'patient_id': 'AnonPtNo',
-    'date': 'DateSent',
-    'sample_description': 'Originaldescription',
-    'sample_type': 'Sampletype',
-    'sample_id': 'SampleID',
-    'sent_from_name': 'GPHospital',
-    'sent_from_location': 'Location',
+    'patient_id': 'patient_id',
+    'date': 'date_sent',
+    'sample_description': 'description',
+    'sample_type': 'sample_type',
+    'sample_id': 'sample_id',
+    'sent_from_name': 'sent_from_name',
+    'sent_from_location': 'sent_from_location',
+    'test_method': 'test_method',
+    'organism': 'organism'
 }
 
 ISOLATE_SAMPLE_DESCRIPTION = [

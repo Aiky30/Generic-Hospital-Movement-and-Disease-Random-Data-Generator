@@ -120,14 +120,17 @@ class IsolateOutput:
 
         for isolate in self.isolate_list:
 
+            #FIXME: Method and organismshould be randomly selected!!
             current_row = {
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['patient_id']: isolate.individual_id,
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['date']: isolate.date_sent.strftime(config.ISOLATE_DATE_FORMAT),
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_description']: isolate.sample_description,
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_type']: isolate.sample_type,
                 config.OUTPUT_ISOLATE_HEADING_MAPPING['sample_id']: isolate.id,
-                config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_name']: isolate.sent_from_name,
-                config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_location']: isolate.sent_from_location,
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['test_method']: "Method 1",
+                config.OUTPUT_ISOLATE_HEADING_MAPPING['organism']: "Organism 1",
+                #config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_name']: isolate.sent_from_name,
+                #config.OUTPUT_ISOLATE_HEADING_MAPPING['sent_from_location']: isolate.sent_from_location,
             }
 
             mapped_antibiogram = self.antibiogram.get_antibiogram_map(isolate.antibiogram, config.ANTIBIOGRAM_ANTIBIOTICS)
