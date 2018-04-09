@@ -82,6 +82,8 @@ OUTPUT_MOVEMENT_HEADING_MAPPING = {
     'location_end_date': 'EpisodeDischargeDate',
     'admission_end_date': 'SpellDischargeDate',
     'admission_start_date': 'SpellAdmissionDate',
+    'location': 'Ward',
+    'site_building': 'Hospital',
 }
 
 # Output movement file

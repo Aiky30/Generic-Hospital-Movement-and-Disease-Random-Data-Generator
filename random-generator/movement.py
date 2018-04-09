@@ -100,6 +100,9 @@ class Movement:
                 location_start_date = location_dates[i]['start']
                 location_end_date = location_dates[i]['end']
 
+                # Randomly select a location
+                location_selected = random.choice(config.LOCATION_LIST)
+
                 # Write the entry to the output file
                 writer.writerow({
                     config.OUTPUT_MOVEMENT_HEADING_MAPPING['location_start_date']: location_start_date.strftime(config.DATE_FORMAT),
@@ -107,9 +110,10 @@ class Movement:
                     config.OUTPUT_MOVEMENT_HEADING_MAPPING['admission_end_date']: admission_end_date.strftime(config.DATE_FORMAT),
                     config.OUTPUT_MOVEMENT_HEADING_MAPPING['admission_start_date']: admission_start_date.strftime(config.DATE_FORMAT),
                     config.OUTPUT_MOVEMENT_HEADING_MAPPING['patient_id']: individual_id,
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['location']: location_selected,
+                    config.OUTPUT_MOVEMENT_HEADING_MAPPING['site_building']: "Site 1"
                 })
 
-                location_selected = random.choice(config.LOCATION_LIST)
                 generated_location = Location(location_selected, location_start_date, location_end_date)
                 individual.add_location(generated_location)
 
