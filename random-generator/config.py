@@ -95,12 +95,12 @@ OUTPUT_ISOLATE_HEADINGS = [
     'sample_id',
     'test_method',
     'organism',
-    'Benzylpenicillin',
-    'Cefoxitin',
-    'Oxacillin',
-    'Ciprofloxacin',
-    'Erythromycin',
-    'Chloramphenicol',
+    'antibiotic_Benzylpenicillin',
+    'antibiotic_Cefoxitin',
+    'antibiotic_Oxacillin',
+    'antibiotic_Ciprofloxacin',
+    'antibiotic_Erythromycin',
+    'antibiotic_Chloramphenicol',
 ]
 
 # FIXME: This method of setting the headings is the preferred method. Complicated by Antibiogram headings!! Currently testing!!
@@ -169,12 +169,12 @@ ISOLATE_LIST = range(1, ISOLATE_COUNT)
 ANTIBIOGRAM_RESULT_BANK = range(0, ANTIBIOGRAM_RESULT_BANK_COUNT)
 
 ANTIBIOGRAM_ANTIBIOTICS = [
-    'Benzylpenicillin',
-    'Cefoxitin',
-    'Oxacillin',
-    'Ciprofloxacin',
-    'Erythromycin',
-    'Chloramphenicol',
+    'antibiotic_Benzylpenicillin',
+    'antibiotic_Cefoxitin',
+    'antibiotic_Oxacillin',
+    'antibiotic_Ciprofloxacin',
+    'antibiotic_Erythromycin',
+    'antibiotic_Chloramphenicol',
 ]
 
 ANTIBIOGRAM_ANTIBIOTIC_VALUES = ['S', 'I', 'R']
